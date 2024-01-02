@@ -5,30 +5,33 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/index',
-      name: 'index',
+      path: '/users/index',
+      name: 'user.index',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/Index.vue')
+      component: () => import('../views/user/Index.vue')
     },
     {
-      path: '/page',
-      name: 'page',
-      component: () => import('../views/Page.vue')
+      path: '/users/:id',
+      name: 'user.show',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/user/Show.vue')
     },
     {
-      path: '/user/login',
+      path: '/users/login',
       name: 'user.login',
       component: () => import('../views/user/Login.vue')
     },
     {
-      path: '/user/registration',
+      path: '/users/registration',
       name: 'user.registration',
       component: () => import('../views/user/Registration.vue')
     },
     {
-      path: '/user/personal',
+      path: '/users/personal',
       name: 'user.personal',
       component: () => import('../views/user/Personal.vue')
     }

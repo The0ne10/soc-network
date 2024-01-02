@@ -1,6 +1,7 @@
 <script setup>
 import axios from "axios";
 import {onMounted, ref} from "vue";
+import Post from "@/components/post.vue";
 
 const title = ref('')
 const content = ref('')
@@ -78,14 +79,9 @@ const store = () => {
              border-sky-400 hover:text-black ml-auto" href="#">Publish</a>
         </div>
         </div>
-    <div>
+    <div v-if="posts">
         <h1 class="text-center mb-8 pb-8 border-b border-gray-300">Posts</h1>
-        <div v-if="posts" v-for="post in posts" v-bind="post" class="mb-8 pb-8 border-b border-gray-300">
-            <h1 class="text-xl text-center">{{ post.title }}</h1>
-            <img class="my-3 mx-auto" v-if="post.image_url" :src="post.image_url" :alt="post.title" />
-            <p>{{ post.content }}</p>
-            <p class="mt-2 ml-auto text-sm text-right text-slate-500">{{ post.date }}</p>
-        </div>
+        <Post v-for="post in posts" v-bind="post" :post="post"/>
     </div>
 </div>
 </template>

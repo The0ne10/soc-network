@@ -1,6 +1,8 @@
 <script>
 import axios from "axios";
-import router from "@/router/index.js";
+import {useRouter} from "vue-router";
+
+const router = useRouter()
 export default {
     data() {
         return {

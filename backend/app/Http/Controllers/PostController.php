@@ -19,7 +19,8 @@ class PostController extends Controller
 {
     public function index(): ResourceCollection
     {
-        $posts = Post::query()->where('user_id', auth()->id())->latest()->get();
+        $posts = Post::query()->where('user_id', auth()->id())
+            ->withCount('repostedByPosts')->latest()->get();
 
         $likedPostIds = LikedPost::query()->where('user_id', auth()->id())
             ->get('post_id')->pluck('post_id')->toArray();
@@ -49,6 +50,7 @@ class PostController extends Controller
             if (isset($imageId)) {
                 $this->processImage($imageId, $post->id);
             }
+            PostImage::clearStorage();
 
             DB::commit();
         } catch (\Exception $exception) {

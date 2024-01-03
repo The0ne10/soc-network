@@ -2,6 +2,7 @@
 import axios from "axios";
 import {onMounted, ref} from "vue";
 import Post from "@/components/post.vue";
+import Stat from "@/components/Stat.vue";
 
 const title = ref('')
 const content = ref('')
@@ -10,6 +11,8 @@ const imageId = ref('')
 
 const posts = ref([])
 const errors = ref([])
+
+const stats = ref([])
 
 const getPosts = () => {
     axios.get('http://localhost:8000/api/posts')
@@ -31,7 +34,10 @@ const onFileChange = (e) => {
 
 };
 
-onMounted(() => getPosts())
+onMounted(() => {
+    getPosts()
+    getStat()
+})
 
 
 const store = () => {
@@ -51,11 +57,19 @@ const store = () => {
         })
 }
 
+const getStat = () => {
+    axios.post('http://localhost:8000/api/users/stats', {id: null})
+        .then(res => {
+            stats.value = res.data.data
+        })
+}
+
 
 </script>
 
 <template>
 <div class="w-96 mx-auto">
+    <Stat :stats="stats"/>
     <div class="mb-4">
         <div>
             <input v-model="title" :class="['w-96 rounded-3xl p-2 border border-slate-400', errors.title ? '' : 'mb-3']" type="text" placeholder="title">
@@ -78,8 +92,8 @@ const store = () => {
                     class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full
                     file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
             </div>
-            <div>
-                <a class="ml-3"  href="#">Cancel</a>
+            <div v-if="image">
+                <a @click.prevent="image = null" class="ml-3"  href="#">Cancel</a>
             </div>
         </div>
         <div v-if="image">

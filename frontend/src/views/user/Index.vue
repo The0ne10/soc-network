@@ -34,7 +34,7 @@ onMounted(() => getUsers());
                 <div>
                     <a @click.prevent="toggleFollowing(user)"
                        :class="['block p-2 w-32 bg-sky-400 rounded-full text-center', user.is_followed ? 'bg-white text-black border border-sky-400' : 'hover:bg-white border \
-             border-sky-400 hover:text-black ml-auto']" href="#">follow</a>
+             border-sky-400 hover:text-black ml-auto']" href="#">{{ user.is_followed ? 'Unfollowed' : 'Follow' }}</a>
                 </div>
             </div>
         </div>

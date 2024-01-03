@@ -11,7 +11,7 @@ class Comment extends Model
 {
     use HasFactory;
     protected $guarded = false;
-    protected $with = ['user'];
+    protected $with = ['user', 'parent'];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -22,5 +22,10 @@ class Comment extends Model
         return Attribute::make(
             get: fn() => $this->created_at->diffForHumans()
         );
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Comment::class, 'parent_id', 'id');
     }
 }

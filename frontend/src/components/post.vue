@@ -16,6 +16,9 @@ const content = ref('')
 const body = ref('')
 const errors = ref([])
 const comments = ref([])
+const isShowed = ref(false)
+const answerComment = ref(null)
+const commentId = ref(null)
 
 const toggleLike = (post) => {
     axios.post(`http://localhost:8000/api/posts/${post.id}/toggle_likes`)
@@ -47,10 +50,14 @@ const isPersonal = () => {
 }
 
 const storeComment = (post) => {
-    axios.post(`http://localhost:8000/api/posts/${post.id}/comments`, {body: body.value})
+    commentId.value = answerComment.value ? answerComment.value.id : null
+    axios.post(`http://localhost:8000/api/posts/${post.id}/comments`, {body: body.value, parent_id: commentId.value})
         .then(res => {
             body.value = ''
             comments.value.unshift(res.data.data)
+            answerComment.value = null
+            post.comments_count++
+            isShowed.value = true
         })
 }
 
@@ -58,7 +65,12 @@ const getComments = (post) => {
     axios.get(`http://localhost:8000/api/posts/${post.id}/comments`)
         .then(res => {
             comments.value = res.data.data
+            isShowed.value = true
         })
+}
+
+const setParentId = (comment) => {
+    answerComment.value = comment
 }
 
 
@@ -70,10 +82,12 @@ const getComments = (post) => {
         <div>
             <div class="mb-8 pb-8 border-b border-gray-300">
                 <h1 class="text-xl text-center">{{ post.title }}</h1>
+                <router-link class="text-sm text-slate-500" :to="{name: 'user.show', params: {id: post.user.id}}">{{ post.user.name}}</router-link>
                 <img class="my-3 mx-auto" v-if="post.image_url" :src="post.image_url" :alt="post.title" />
                 <p>{{ post.content }}</p>
                 <div v-if="post.reposted_post" class="bg-gray-100 p-4 m-4 border border-gray-300">
                     <h1 class="text-xl">{{ post.reposted_post.title }}</h1>
+                    <router-link class="text-sm text-slate-500" :to="{name: 'user.show', params: {id: post.reposted_post.user.id}}">{{ post.reposted_post.user.name}}</router-link>
                     <img class="my-3 mx-auto" v-if="post.reposted_post.image_url" :src="post.reposted_post.image_url"
                          :alt="post.reposted_post.title" />
                     <p>{{ post.reposted_post.content }}</p>
@@ -93,7 +107,7 @@ const getComments = (post) => {
                                  :class="['mr-2 stroke-sky-500 cursor-pointer hover:fill-sky-500 w-6 h-6 fill-white']">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
                             </svg>
-                            <p>0</p>
+                            <p>{{ post.reposted_by_posts_count }}</p>
                         </div>
                     </div>
                     <p class="mt-2 ml-auto text-sm text-right text-slate-500">{{ post.date }}</p>
@@ -117,17 +131,25 @@ const getComments = (post) => {
                     </div>
                 </div>
                 <div v-if="post.comments_count > 0" class="mt-4">
-                    <p @click.prevent="getComments(post)">Show {{ post.comments_count }} comments</p>
-                    <div v-if="comments">
+                    <p v-if="!isShowed" class="cursor-pointer" @click.prevent="getComments(post)">Show {{ post.comments_count }} comments</p>
+                    <p v-if="isShowed" @click.prevent="isShowed = !isShowed" class="cursor-pointer">Close</p>
+                    <div v-if="comments && isShowed">
                         <div v-for="comment in comments" class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-sm">{{ comment.user.name }}</p>
-                            <p>{{ comment.body }}</p>
+                            <div class="flex mb-2">
+                                <p class="text-sm mr-2">{{ comment.user.name }}</p>
+                                <p @click.prevent="setParentId(comment)" class="text-sm text-sky-500 cursor-pointer">Answer</p>
+                            </div>
+                            <p><span class="text-sky-400">{{ comment.answered_for_user ? comment.answered_for_user + " "  + "<-" + " "  : '' }}</span>{{ comment.body }}</p>
                             <p class="text-right text-sm text-slate-300">{{ comment.date }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <div>
+                    <div class="mb-3">
+                        <div class="flex">
+                            <p v-if="answerComment" class="mr-2 items-center text-sky-300">Answered for {{ answerComment.user.name}}</p>
+                            <p v-if="answerComment" @click.prevent="answerComment = null" class="cursor-pointer text-sm">Cancel</p>
+                        </div>
                         <input v-model="body" class="w-96 p-2 mb-3 rounded-full border border-slate-400" type="text" placeholder="comments...">
                     </div>
                     <div>

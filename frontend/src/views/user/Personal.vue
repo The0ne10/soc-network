@@ -9,6 +9,7 @@ const image = ref('')
 const imageId = ref('')
 
 const posts = ref([])
+const errors = ref([])
 
 const getPosts = () => {
     axios.get('http://localhost:8000/api/posts')
@@ -45,6 +46,9 @@ const store = () => {
             imageId.value = ''
             posts.value.unshift(res.data.data)
         })
+        .catch(e => {
+            errors.value = e.response.data.errors
+        })
 }
 
 
@@ -54,11 +58,18 @@ const store = () => {
 <div class="w-96 mx-auto">
     <div class="mb-4">
         <div>
-            <input v-model="title" class="w-96 mb-3 rounded-full border border-slate-400" type="text" placeholder="title">
+            <input v-model="title" :class="['w-96 rounded-3xl p-2 border border-slate-400', errors.title ? '' : 'mb-3']" type="text" placeholder="title">
+            <div v-if="errors.title">
+                <p v-for="error in errors.title" class="text-red-500 mb-3">{{ error }}</p>
+            </div>
         </div>
         <div>
-            <textarea v-model="content" class="w-96 mb-3 rounded-full border border-slate-400" placeholder="content"></textarea>
+            <textarea v-model="content" :class="['w-96 p-2 rounded-3xl border border-slate-400', errors.content ? '' : 'mb-3']" placeholder="content"></textarea>
+            <div v-if="errors.content">
+                <p v-for="error in errors.content" class="text-red-500 mb-3">{{ error }}</p>
+            </div>
         </div>
+
         <div class="flex mb-3 items-center">
             <div>
                 <input

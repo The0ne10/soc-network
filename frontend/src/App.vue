@@ -35,6 +35,7 @@ onMounted(() => getToken())
         <div class="flex justify-between p-8 w-96 mx-auto">
             <router-link class="text-sky-500 mr-1" v-if="!token" :to="{ name: 'user.login'}">Login</router-link>
             <router-link class="text-sky-500 mr-1" v-if="token" :to="{ name: 'user.index'}">Users</router-link>
+            <router-link class="text-sky-500 mr-1" v-if="token" :to="{ name: 'user.feed'}">Feed</router-link>
             <router-link class="text-sky-500 mr-1" v-if="token" :to="{ name: 'user.personal'}">Personal</router-link>
             <router-link class="text-sky-500 mr-1" v-if="!token" :to="{ name: 'user.registration'}">Registration</router-link>
             <a v-if="token" class="text-sky-500 mr-1" @click.prevent="logout" href="#">Logout</a>

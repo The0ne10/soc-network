@@ -16,11 +16,12 @@ export default {
                 .then(response => {
                     axios.post('http://localhost:8000/login', {email: this.email, password: this.password})
                         .then(r => {
+                            console.log(r)
                             localStorage.setItem('x_xsrf_token', r.config.headers['X-XSRF-TOKEN'])
                             router.push({name: 'user.personal'})
                         })
                         .catch(err => {
-
+                            //
                         })
                     })
                 }

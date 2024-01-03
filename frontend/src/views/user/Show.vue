@@ -1,9 +1,10 @@
 <script setup>
 import axios from "axios";
-import {onMounted, ref, } from "vue";
+import {onMounted, ref,} from "vue";
 
 import Post from "@/components/post.vue";
 import {useRoute} from "vue-router";
+
 const route = useRoute()
 
 const posts = ref([])
@@ -23,12 +24,12 @@ onMounted(() => getPosts())
 </script>
 
 <template>
-<div class="w-96 mx-auto">
-    <div v-if="posts">
-        <h1 class="text-center mb-8 pb-8 border-b border-gray-300">Posts</h1>
-        <Post v-for="post in posts" v-bind="post" :post="post"/>
+    <div class="w-96 mx-auto">
+        <div v-if="posts">
+            <h1 class="text-center mb-8 pb-8 border-b border-gray-300">Posts</h1>
+            <Post v-for="post in posts" v-bind="post" :post="post"/>
+        </div>
     </div>
-</div>
 </template>
 
 <style scoped>
